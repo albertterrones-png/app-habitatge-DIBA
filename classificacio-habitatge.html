@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Classificació Municipal d'Habitatge · Catalunya</title>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<style>
+  :root {
+    --porpra:      #3d2b8e;
+    --taronja:     #e07030;
+    --vermell:     #c0404a;
+    --groc:        #d4a020;
+    --rosa:        #c06070;
+    --gris-fons:   #f2f2f2;
+    --gris-vora:   #ddd;
+    --blanc:       #ffffff;
+    --text:        #222;
+    --text-suau:   #555;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Open Sans', sans-serif;
+    background: var(--gris-fons);
+    color: var(--text);
+    font-size: 15px;
+  }
+
+  /* CAPÇALERA */
+  .header-top {
+    background: var(--blanc);
+    border-bottom: 1px solid var(--gris-vora);
+    padding: 0.4rem 2rem;
+    font-size: 0.72rem;
+    color: #888;
+  }
+  .header-banner {
+    background: var(--blanc);
+    padding: 1.4rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.4rem;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--gris-vora);
+  }
+  .geo-deco {
+    position: absolute; right: 2rem; top: 50%;
+    transform: translateY(-50%);
+    display: grid; grid-template-columns: repeat(5,1fr);
+    gap: 5px; width: 130px; opacity: 0.45;
+    pointer-events: none;
+  }
+  .geo-deco span { display:block; border-radius:1px; }
+  .banner-badge {
+    background: var(--porpra); color: white;
+    padding: 0.6rem 1.1rem;
+    font-size: 0.65rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    line-height: 1.6; flex-shrink: 0;
+  }
+  .banner-badge strong { display:block; font-size:1.55rem; line-height:1; letter-spacing:0.03em; }
+  .banner-subtitle { font-size:0.82rem; color:var(--text-suau); font-weight:300; max-width:380px; line-height:1.6; }
+  .banner-subtitle strong { display:block; font-size:1rem; font-weight:700; color:var(--porpra); margin-bottom:0.2rem; }
+  .seccio-franja {
+    background: var(--porpra); color: white;
+    padding: 0.55rem 2rem; font-size: 0.8rem;
+    font-weight: 600; letter-spacing: 0.04em;
+    display: flex; align-items: center; gap: 0.7rem;
+  }
+  .seccio-franja::before {
+    content:''; display:inline-block;
+    width:3px; height:0.95rem; background:white;
+    border-radius:2px; flex-shrink:0;
+  }
+
+  /* LAYOUT PRINCIPAL: 2 columnes */
+  .layout {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    grid-template-rows: auto;
+    gap: 0;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.5rem;
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  @media (max-width: 780px) {
+    .layout { grid-template-columns: 1fr; }
+    #mapa { height: 320px !important; }
+  }
+
+  /* COLUMNA ESQUERRA: cerca + resultat */
+  .col-cerca { display: flex; flex-direction: column; gap: 1rem; }
+
+  .intro-bloc {
+    background: var(--blanc);
+    border-left: 4px solid var(--porpra);
+    padding: 0.9rem 1.2rem;
+    font-size: 0.85rem; color: var(--text-suau); line-height: 1.7;
+  }
+  .intro-bloc strong { color: var(--porpra); }
+
+  .cerca-titol {
+    font-size: 0.7rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--porpra); margin-bottom: 0.4rem;
+  }
+  .search-wrapper { position: relative; }
+  .search-wrapper input {
+    width: 100%; padding: 0.75rem 1rem 0.75rem 2.6rem;
+    font-family: 'Open Sans', sans-serif; font-size: 0.92rem;
+    border: 2px solid var(--gris-vora); background: var(--blanc);
+    color: var(--text); outline: none; transition: border-color 0.2s;
+    border-radius: 0;
+  }
+  .search-wrapper input:focus { border-color: var(--porpra); }
+  .search-icon {
+    position: absolute; left: 0.8rem; top: 50%;
+    transform: translateY(-50%); color: #aaa; font-size: 1rem;
+    pointer-events: none;
+  }
+  #suggestions {
+    background: var(--blanc);
+    border: 2px solid var(--porpra); border-top: none;
+    max-height: 200px; overflow-y: auto; display: none;
+    position: absolute; width: 100%; z-index: 1000;
+  }
+  #suggestions li {
+    list-style: none; padding: 0.6rem 1rem;
+    cursor: pointer; font-size: 0.88rem;
+    border-bottom: 1px solid var(--gris-vora); transition: background 0.12s;
+  }
+  #suggestions li:last-child { border-bottom: none; }
+  #suggestions li:hover, #suggestions li.active {
+    background: #ede9f8; color: var(--porpra); font-weight: 600;
+  }
+
+  /* RESULTAT */
+  #resultat { display: none; animation: apareixer 0.3s ease; }
+  @keyframes apareixer {
+    from { opacity:0; transform:translateY(4px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  .resultat-cap {
+    background: var(--porpra); color: white; padding: 0.9rem 1.2rem;
+  }
+  .resultat-nom { font-size: 1.3rem; font-weight: 700; }
+  .resultat-prov { font-size: 0.7rem; opacity: 0.7; text-transform: uppercase; letter-spacing: 0.08em; }
+
+  .taula-classificacions { width: 100%; border-collapse: collapse; background: var(--blanc); }
+  .taula-classificacions thead tr { background: #ede9f8; }
+  .taula-classificacions th {
+    padding: 0.6rem 0.9rem; font-size: 0.68rem;
+    text-transform: uppercase; letter-spacing: 0.09em;
+    font-weight: 700; color: var(--porpra); text-align: left;
+    border-bottom: 2px solid var(--porpra);
+  }
+  .taula-classificacions td {
+    padding: 0.8rem 0.9rem; font-size: 0.83rem;
+    border-bottom: 1px solid var(--gris-vora);
+    vertical-align: top; line-height: 1.5;
+  }
+  .taula-classificacions tr:last-child td { border-bottom: none; }
+  .taula-classificacions tbody tr:hover td { background: #fafafa; }
+  .td-classificacio { font-weight: 600; color: var(--text); }
+  .td-classificacio small {
+    display: block; font-weight: 300;
+    font-size: 0.72rem; color: #999; margin-top: 0.1rem;
+  }
+  .pill {
+    display: inline-block; padding: 0.2rem 0.6rem;
+    font-size: 0.7rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    border-radius: 2px; white-space: nowrap;
+  }
+  .pill-si      { background:#e6f4e6; color:#2a6e2a; border:1px solid #a0c8a0; }
+  .pill-no      { background:#f5f5f5; color:#888;    border:1px solid #ddd; }
+  .pill-pendent { background:#fff8e0; color:#8a6000; border:1px solid #e8cc60; }
+
+  .nota-font {
+    background: var(--blanc); border-top: 2px solid var(--gris-vora);
+    padding: 0.8rem 1rem; font-size: 0.7rem; color: #999; line-height: 1.7;
+  }
+  .nota-font a { color: var(--porpra); text-decoration: none; }
+
+  .btn-reset {
+    background: none; border: 2px solid var(--porpra);
+    color: var(--porpra); padding: 0.4rem 1rem;
+    font-family: 'Open Sans', sans-serif; font-size: 0.76rem;
+    font-weight: 700; cursor: pointer;
+    text-transform: uppercase; letter-spacing: 0.07em;
+    transition: all 0.18s; border-radius: 0; margin-top: 1rem;
+  }
+  .btn-reset:hover { background: var(--porpra); color: white; }
+
+  /* COLUMNA DRETA: mapa */
+  .col-mapa { position: sticky; top: 1rem; }
+  .mapa-titol {
+    background: var(--blanc); border-bottom: 2px solid var(--porpra);
+    padding: 0.6rem 1rem;
+    font-size: 0.7rem; font-weight: 700; color: var(--porpra);
+    text-transform: uppercase; letter-spacing: 0.1em;
+  }
+  #mapa {
+    height: 520px;
+    width: 100%;
+    border: 1px solid var(--gris-vora);
+    border-top: none;
+  }
+  .mapa-llegenda {
+    background: var(--blanc);
+    border: 1px solid var(--gris-vora); border-top: none;
+    padding: 0.6rem 1rem;
+    display: flex; gap: 1.2rem; flex-wrap: wrap;
+    font-size: 0.72rem; color: var(--text-suau);
+  }
+  .llegenda-item { display: flex; align-items: center; gap: 0.4rem; }
+  .llegenda-color {
+    width: 14px; height: 14px; border-radius: 2px; flex-shrink: 0;
+  }
+  .llegenda-zmrt    { background: rgba(61,43,142,0.65); border: 1px solid #3d2b8e; }
+  .llegenda-sel     { background: rgba(224,112,48,0.9); border: 1px solid #e07030; }
+  .llegenda-no      { background: rgba(220,220,220,0.7); border: 1px solid #aaa; }
+</style>
+</head>
+<body>
+
+<div class="header-top">Generalitat de Catalunya · Departament de Territori, Habitatge i Transició Ecològica</div>
+
+<div class="header-banner">
+  <div class="geo-deco" aria-hidden="true">
+    <span style="width:14px;height:14px;background:#e07030"></span>
+    <span style="width:10px;height:10px;background:#3d2b8e;margin-top:3px"></span>
+    <span style="width:18px;height:18px;background:#d4a020"></span>
+    <span style="width:9px;height:9px;background:#c0404a;margin-top:5px"></span>
+    <span style="width:13px;height:13px;background:#e07030"></span>
+    <span style="width:20px;height:8px;background:#3d2b8e;margin-top:2px"></span>
+    <span style="width:10px;height:16px;background:#c06070"></span>
+    <span style="width:14px;height:14px;background:#d4a020"></span>
+    <span style="width:8px;height:8px;background:#e07030;margin-top:4px"></span>
+    <span style="width:16px;height:10px;background:#3d2b8e"></span>
+    <span style="width:12px;height:12px;background:#c0404a"></span>
+    <span style="width:10px;height:18px;background:#d4a020"></span>
+    <span style="width:16px;height:10px;background:#e07030;margin-top:2px"></span>
+    <span style="width:8px;height:8px;background:#c06070"></span>
+    <span style="width:14px;height:14px;background:#3d2b8e"></span>
+  </div>
+  <div class="banner-badge">CLASSIFICACIÓ<br><strong>MUNICIPAL</strong>D'HABITATGE</div>
+  <div class="banner-subtitle">
+    <strong>Consulta les categories del teu municipi</strong>
+    Eina de consulta de les classificacions oficials dels municipis de Catalunya en matèria d'habitatge.
+  </div>
+</div>
+<div class="seccio-franja">Urbanisme i habitatge</div>
+
+<div class="layout">
+
+  <!-- Columna esquerra: cerca i resultat -->
+  <div class="col-cerca">
+    <div class="intro-bloc">
+      Escriu el nom d'un <strong>municipi de Catalunya</strong> o fes clic directament sobre el mapa per consultar les seves classificacions oficials d'habitatge.
+    </div>
+
+    <div>
+      <div class="cerca-titol">Cerca el teu municipi</div>
+      <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="cerca" placeholder="p. ex. Girona, Reus, Roses..." autocomplete="off">
+        <ul id="suggestions"></ul>
+      </div>
+    </div>
+
+    <div id="resultat">
+      <div class="resultat-cap">
+        <div class="resultat-nom" id="nom-municipi"></div>
+        <div class="resultat-prov">Catalunya</div>
+      </div>
+      <table class="taula-classificacions">
+        <thead><tr><th>Classificació</th><th>Estat</th><th>Detall</th></tr></thead>
+        <tbody id="taula-cos"></tbody>
+      </table>
+      <div class="nota-font">
+        <strong>Fonts:</strong>
+        <a href="https://habitatge.gencat.cat" target="_blank">Agència de l'Habitatge de Catalunya</a> ·
+        Resolució TER/800/2024 · Resolució TER/2408/2024 · BOE-A-2024-20576 (9 oct. 2024).<br>
+        Les classificacions <em>pendents</em> s'incorporaran en properes versions.
+      </div>
+      <button class="btn-reset" onclick="resetCerca()">← Nova consulta</button>
+    </div>
+  </div>
+
+  <!-- Columna dreta: mapa -->
+  <div class="col-mapa">
+    <div class="mapa-titol">🗺 Mapa de municipis · Clica per consultar</div>
+    <div id="mapa"></div>
+    <div class="mapa-llegenda">
+      <div class="llegenda-item"><div class="llegenda-color llegenda-zmrt"></div> Zona tensionada (ZMRT)</div>
+      <div class="llegenda-item"><div class="llegenda-color llegenda-sel"></div> Municipi seleccionat</div>
+      <div class="llegenda-item"><div class="llegenda-color llegenda-no"></div> No tensionat</div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+// ─── DADES ZMRT ────────────────────────────────────────────────────────────
+
+const zmrt140 = [
+  "Abrera","Aguilar de Segarra","Alella","Alguaire","Amposta","Badalona","Barberà del Vallès",
+  "Barcelona","Begues","Berga","Blanes","Bruc, el","Cabrera de Mar","Caldes d'Estrac",
+  "Caldes de Montbui","Calella","Canet de Mar","Cardedeu","Castellar del Vallès",
+  "Castellbisbal","Castelldefels","Castellnou de Seana","Cerdanyola del Vallès","Cervera",
+  "Cornellà de Llobregat","Cubelles","El Prat de Llobregat","El Vendrell","Esparreguera",
+  "Esplugues de Llobregat","Figueres","Franqueses del Vallès, les","Gavà","Girona",
+  "Granollers","Hospitalet de Llobregat, l'","Igualada","La Garriga","La Llagosta",
+  "La Palma de Cervelló","La Pobla de Claramunt","Les Franqueses del Vallès",
+  "Lleida","Llinars del Vallès","Lloret de Mar","Manlleu","Manresa","Martorell",
+  "Martorelles","Masnou, el","Mataró","Molins de Rei","Mollet del Vallès","Montcada i Reixac",
+  "Montgat","Montmeló","Montornès del Vallès","Malgrat de Mar","Olesa de Montserrat",
+  "Olot","Òrrius","Palafrugell","Palamós","Palau-solità i Plegamans","Parets del Vallès",
+  "Pineda de Mar","Polinyà","Premià de Dalt","Premià de Mar","Puigcerdà","Ripollet",
+  "Ripoll","Rubí","Sabadell","Sant Adrià de Besòs","Sant Andreu de la Barca",
+  "Sant Antoni de Vilamajor","Sant Boi de Llobregat","Sant Celoni","Sant Cugat del Vallès",
+  "Sant Esteve Sesrovires","Sant Feliu de Guíxols","Sant Feliu de Llobregat",
+  "Sant Joan Despí","Sant Joan de Vilatorrada","Sant Just Desvern","Sant Pere de Ribes",
+  "Sant Pol de Mar","Sant Quirze del Vallès","Sant Sadurní d'Anoia","Sant Vicenç dels Horts",
+  "Santa Coloma de Gramenet","Santa Coloma de Queralt","Santa Perpètua de Mogoda",
+  "Sitges","Solsona","Súria","Tarragona","Terrassa","Torelló","Tordera",
+  "Torrefarrera","Torroella de Montgrí","Tortosa","Tremp","Vic","Viladecans",
+  "Vilafranca del Penedès","Vilanova i la Geltrú","Vilassar de Dalt","Vilassar de Mar",
+  "Vilanova del Camí","Valls","Mollerussa"
+];
+
+const zmrt131 = [
+  "Aiguafreda","Albinyana","Alcanar","Alcarràs","Alcover","Aldea, l'","Almacelles","Alpicat",
+  "Altafulla","Ametlla de Mar, l'","Ametlla del Vallès, l'","Ampolla, l'","Anglès",
+  "Arboç, l'","Arbúcies","Artés","Artesa de Segre","Bagà","Begues","Begur","Bellpuig",
+  "Bellver de Cerdanya","Besalú","Bigues i Riells del Fai","Bisbal del Penedès, la",
+  "Borges Blanques, les","Breda","Cadaqués","Calaf","Calafell","Caldes de Malavella",
+  "Calonge i Sant Antoni","Canyelles","Cassà de la Selva","Castellet i la Gornal",
+  "Castellgalí","Castelló d'Empúries","Castell-Platja d'Aro","Castellterçol","Celrà",
+  "Centelles","Creixell","Cunit","Deltebre","Dosrius","Escala, l'","Esquirol, l'",
+  "Folgueroles","Fornells de la Selva","Gelida","Gironella","Hostalric","Linyola","Llançà",
+  "Lliçà d'Amunt","Lliçà de Vall","Maçanet de la Selva","Masquefa","Moià",
+  "Monistrol de Montserrat","Montblanc","Montbrió del Camp","Mont-roig del Camp",
+  "Móra d'Ebre","Morell, el","Navàs","Òdena","Olèrdola","Olesa de Bonesvalls","Olivella",
+  "Pallejà","Palma de Cervelló, la","Pals","Peralada","Piera","Pobla de Montornès, la",
+  "Pont de Suert, el","Ponts","Prats de Lluçanès","Puig-reig","Ràpita, la","Riells i Viabrea",
+  "Riudarenes","Riudoms","Roda de Berà","Roda de Ter","Roses","Sant Antoni de Vilamajor",
+  "Sant Cebrià de Vallalta","Sant Esteve de Palautordera","Sant Feliu de Codines",
+  "Sant Hipòlit de Voltregà","Sant Jaume dels Domenys","Sant Jaume d'Enveja",
+  "Sant Joan de Vilatorrada","Sant Julià de Ramis","Sant Llorenç d'Hortons",
+  "Sant Llorenç Savall","Sant Martí Sarroca","Sant Pere de Riudebitlles","Sant Pere de Torelló",
+  "Sant Pere de Vilamajor","Sant Pere Pescador","Sant Quirze de Besora","Santa Bàrbara",
+  "Santa Coloma de Queralt","Santa Cristina d'Aro","Santa Eulàlia de Ronçana",
+  "Santa Maria de Palautordera","Santa Oliva","Santpedor","Selva del Camp, la","Sénia, la",
+  "Sentmenat","Seva","Sils","Súria","Taradell","Torrelles de Foix","Torroella de Montgrí",
+  "Tossa de Mar","Ulldecona","Vacarisses","Vallgorguina","Vidreres","Vielha e Mijaran",
+  "Viladecavalls","Vilafant","Vilanova del Vallès","Vilobí d'Onyar","Vinyols i els Arcs"
+];
+
+const totsMunicipis = [...new Set([...zmrt140,...zmrt131])].sort((a,b) =>
+  normalitza(a).localeCompare(normalitza(b))
+);
+
+function normalitza(s) {
+  return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[,.'']/g,"").trim();
+}
+
+function esZmrt(nom) {
+  const n = normalitza(nom);
+  return zmrt140.some(m=>normalitza(m)===n) || zmrt131.some(m=>normalitza(m)===n);
+}
+
+function faseDeclarcio(nom) {
+  const n = normalitza(nom);
+  if (zmrt140.some(m=>normalitza(m)===n)) return "1a fase · Resolució TER/800/2024 · Març 2024";
+  if (zmrt131.some(m=>normalitza(m)===n)) return "2a fase · Resolució TER/2408/2024 · Octubre 2024";
+  return "";
+}
+
+// ─── MAPA ──────────────────────────────────────────────────────────────────
+
+const mapa = L.map('mapa', { zoomControl: true }).setView([41.7, 1.5], 7);
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  attribution: '© OpenStreetMap © CARTO',
+  subdomains: 'abcd', maxZoom: 19
+}).addTo(mapa);
+
+let capaGeoJSON = null;
+let capaSeleccionada = null;
+
+function colorMunicipi(nom) {
+  return esZmrt(nom)
+    ? { fillColor: '#3d2b8e', fillOpacity: 0.55, color: '#2a1d6e', weight: 0.5 }
+    : { fillColor: '#cccccc', fillOpacity: 0.4, color: '#999', weight: 0.5 };
+}
+
+function colorSeleccionat() {
+  return { fillColor: '#e07030', fillOpacity: 0.85, color: '#b85010', weight: 2 };
+}
+
+// Carregar TopoJSON dels municipis de Catalunya des de GitHub
+fetch('https://raw.githubusercontent.com/sirisacademic/catalonia-cartography/master/cat-municipis.json')
+  .then(r => r.json())
+  .then(topo => {
+    // Convertir TopoJSON a GeoJSON manualment (sense llibreria externa)
+    // El fitxer cat-municipis.json és ja GeoJSON/TopoJSON especial - intentem llegir-lo
+    return processarDades(topo);
+  })
+  .catch(() => {
+    document.getElementById('mapa').innerHTML =
+      '<div style="padding:2rem;text-align:center;color:#888;font-size:0.85rem">⚠️ No s\'han pogut carregar les dades del mapa.<br>Utilitza la cerca de text per consultar el teu municipi.</div>';
+  });
+
+function processarDades(data) {
+  // Intentar com a TopoJSON
+  if (data.type === 'Topology') {
+    // Necessitem topojson.js - fem un fetch alternatiu
+    carregarAmbTopojson(data);
+  } else {
+    // Ja és GeoJSON
+    carregarGeoJSON(data);
+  }
+}
+
+function carregarAmbTopojson(topo) {
+  const script = document.createElement('script');
+  script.src = 'https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js';
+  script.onload = () => {
+    const clau = Object.keys(topo.objects)[0];
+    const geojson = topojson.feature(topo, topo.objects[clau]);
+    carregarGeoJSON(geojson);
+  };
+  script.onerror = () => {
+    console.warn('No s\'ha pogut carregar topojson.js');
+  };
+  document.head.appendChild(script);
+}
+
+function carregarGeoJSON(geojson) {
+  capaGeoJSON = L.geoJSON(geojson, {
+    style: feature => {
+      const nom = feature.properties.nom_muni || feature.properties.NOMMUNI ||
+                  feature.properties.name || feature.properties.NOM || '';
+      return colorMunicipi(nom);
+    },
+    onEachFeature: (feature, layer) => {
+      const nom = feature.properties.nom_muni || feature.properties.NOMMUNI ||
+                  feature.properties.name || feature.properties.NOM || '';
+      if (!nom) return;
+
+      layer.bindTooltip(nom, { sticky: true, className: 'tooltip-municipi' });
+
+      layer.on('click', () => {
+        seleccionarMunicipi(nom, layer);
+      });
+
+      layer.on('mouseover', function() {
+        if (layer !== capaSeleccionada) {
+          this.setStyle({ fillOpacity: 0.8, weight: 1.5 });
+        }
+      });
+
+      layer.on('mouseout', function() {
+        if (layer !== capaSeleccionada) {
+          const estil = colorMunicipi(nom);
+          this.setStyle(estil);
+        }
+      });
+    }
+  }).addTo(mapa);
+
+  mapa.fitBounds(capaGeoJSON.getBounds());
+}
+
+function seleccionarMunicipi(nom, layer) {
+  // Restaurar l'anterior seleccionat
+  if (capaSeleccionada) {
+    const nomAnterior = capaSeleccionada.feature.properties.nom_muni ||
+                        capaSeleccionada.feature.properties.NOMMUNI ||
+                        capaSeleccionada.feature.properties.name ||
+                        capaSeleccionada.feature.properties.NOM || '';
+    capaSeleccionada.setStyle(colorMunicipi(nomAnterior));
+  }
+
+  // Ressaltar el nou
+  layer.setStyle(colorSeleccionat());
+  layer.bringToFront();
+  capaSeleccionada = layer;
+
+  mostrarResultat(nom);
+}
+
+// ─── CERCA PER TEXT ────────────────────────────────────────────────────────
+
+const input = document.getElementById('cerca');
+const sugg  = document.getElementById('suggestions');
+let sel = -1;
+
+input.addEventListener('input', () => {
+  const q = normalitza(input.value);
+  sugg.innerHTML = ''; sel = -1;
+  if (q.length < 2) { sugg.style.display='none'; return; }
+  const hits = totsMunicipis.filter(m => normalitza(m).includes(q)).slice(0,8);
+  if (!hits.length) { sugg.style.display='none'; return; }
+  hits.forEach(m => {
+    const li = document.createElement('li');
+    li.textContent = m;
+    li.addEventListener('click', () => {
+      mostrarResultat(m);
+      sugg.style.display = 'none';
+      input.value = m;
+      centrarMapaEn(m);
+    });
+    sugg.appendChild(li);
+  });
+  sugg.style.display = 'block';
+});
+
+input.addEventListener('keydown', e => {
+  const items = sugg.querySelectorAll('li');
+  if (e.key==='ArrowDown') { sel=Math.min(sel+1,items.length-1); marcarActiu(items); e.preventDefault(); }
+  else if (e.key==='ArrowUp') { sel=Math.max(sel-1,0); marcarActiu(items); e.preventDefault(); }
+  else if (e.key==='Enter' && sel>=0) {
+    const nom = items[sel].textContent;
+    mostrarResultat(nom);
+    input.value = nom;
+    sugg.style.display='none';
+    centrarMapaEn(nom);
+  }
+});
+
+function marcarActiu(items) { items.forEach((li,i)=>li.classList.toggle('active',i===sel)); }
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.search-wrapper')) sugg.style.display='none';
+});
+
+function centrarMapaEn(nom) {
+  if (!capaGeoJSON) return;
+  const n = normalitza(nom);
+  capaGeoJSON.eachLayer(layer => {
+    const nomCapa = layer.feature?.properties?.nom_muni ||
+                    layer.feature?.properties?.NOMMUNI ||
+                    layer.feature?.properties?.name ||
+                    layer.feature?.properties?.NOM || '';
+    if (normalitza(nomCapa) === n) {
+      seleccionarMunicipi(nomCapa, layer);
+      mapa.fitBounds(layer.getBounds(), { maxZoom: 12, padding: [40,40] });
+    }
+  });
+}
+
+// ─── MOSTRAR RESULTAT ──────────────────────────────────────────────────────
+
+function mostrarResultat(municipi) {
+  const zmrt    = esZmrt(municipi);
+  const fase    = faseDeclarcio(municipi);
+
+  document.getElementById('nom-municipi').textContent = municipi;
+  document.getElementById('taula-cos').innerHTML = `
+    ${fila(
+      'Zona de Mercat Residencial Tensionat (ZMRT)',
+      'Llei 12/2023, pel dret a l\'habitatge',
+      zmrt ? 'si' : 'no',
+      zmrt ? 'Sí' : 'No',
+      zmrt
+        ? `Inclòs · ${fase}. El preu del lloguer està subjecte a contenció de rendes.`
+        : 'No inclòs. El preu del lloguer no està regulat per la Llei 12/2023.'
+    )}
+    ${fila(
+      'Àrea de Demanda Residencial Forta i Acreditada',
+      'Pla Territorial Sectorial d\'Habitatge',
+      'pendent','Pendent',
+      'Classificació pendent de verificació. S\'incorporarà en properes versions.'
+    )}
+    ${fila(
+      'Municipi Rural',
+      'Classificació territorial de la Generalitat',
+      'pendent','Pendent',
+      'Classificació pendent de verificació. S\'incorporarà en properes versions.'
+    )}
+  `;
+  document.getElementById('resultat').style.display = 'block';
+}
+
+function fila(nom, sub, estat, etiq, detall) {
+  return `<tr>
+    <td class="td-classificacio">${nom}<small>${sub}</small></td>
+    <td><span class="pill pill-${estat}">${etiq}</span></td>
+    <td style="font-size:0.81rem;color:var(--text-suau)">${detall}</td>
+  </tr>`;
+}
+
+function resetCerca() {
+  input.value = '';
+  document.getElementById('resultat').style.display = 'none';
+  if (capaSeleccionada) {
+    const nom = capaSeleccionada.feature?.properties?.nom_muni ||
+                capaSeleccionada.feature?.properties?.NOMMUNI ||
+                capaSeleccionada.feature?.properties?.name ||
+                capaSeleccionada.feature?.properties?.NOM || '';
+    capaSeleccionada.setStyle(colorMunicipi(nom));
+    capaSeleccionada = null;
+  }
+  input.focus();
+}
+</script>
+
+<style>
+.tooltip-municipi {
+  background: white;
+  border: 1px solid #3d2b8e;
+  color: #3d2b8e;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 2px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+</style>
+</body>
+</html>
