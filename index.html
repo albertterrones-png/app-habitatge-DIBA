@@ -447,13 +447,11 @@ function carregarAmbTopojson(topo) {
 function carregarGeoJSON(geojson) {
   capaGeoJSON = L.geoJSON(geojson, {
     style: feature => {
-      const nom = feature.properties.nom_muni || feature.properties.NOMMUNI ||
-                  feature.properties.name || feature.properties.NOM || '';
+      const nom = feature.properties.nom || '';
       return colorMunicipi(nom);
     },
     onEachFeature: (feature, layer) => {
-      const nom = feature.properties.nom_muni || feature.properties.NOMMUNI ||
-                  feature.properties.name || feature.properties.NOM || '';
+      const nom = feature.properties.nom || '';
       if (!nom) return;
 
       layer.bindTooltip(nom, { sticky: true, className: 'tooltip-municipi' });
@@ -483,10 +481,7 @@ function carregarGeoJSON(geojson) {
 function seleccionarMunicipi(nom, layer) {
   // Restaurar l'anterior seleccionat
   if (capaSeleccionada) {
-    const nomAnterior = capaSeleccionada.feature.properties.nom_muni ||
-                        capaSeleccionada.feature.properties.NOMMUNI ||
-                        capaSeleccionada.feature.properties.name ||
-                        capaSeleccionada.feature.properties.NOM || '';
+    const nomAnterior = capaSeleccionada.feature.properties.nom || '';
     capaSeleccionada.setStyle(colorMunicipi(nomAnterior));
   }
 
@@ -547,10 +542,7 @@ function centrarMapaEn(nom) {
   if (!capaGeoJSON) return;
   const n = normalitza(nom);
   capaGeoJSON.eachLayer(layer => {
-    const nomCapa = layer.feature?.properties?.nom_muni ||
-                    layer.feature?.properties?.NOMMUNI ||
-                    layer.feature?.properties?.name ||
-                    layer.feature?.properties?.NOM || '';
+    const nomCapa = layer.feature?.properties?.nom || '';
     if (normalitza(nomCapa) === n) {
       seleccionarMunicipi(nomCapa, layer);
       mapa.fitBounds(layer.getBounds(), { maxZoom: 12, padding: [40,40] });
@@ -603,10 +595,7 @@ function resetCerca() {
   input.value = '';
   document.getElementById('resultat').style.display = 'none';
   if (capaSeleccionada) {
-    const nom = capaSeleccionada.feature?.properties?.nom_muni ||
-                capaSeleccionada.feature?.properties?.NOMMUNI ||
-                capaSeleccionada.feature?.properties?.name ||
-                capaSeleccionada.feature?.properties?.NOM || '';
+    const nom = capaSeleccionada.feature?.properties?.nom || '';
     capaSeleccionada.setStyle(colorMunicipi(nom));
     capaSeleccionada = null;
   }
