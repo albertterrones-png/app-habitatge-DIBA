@@ -355,7 +355,35 @@ const CAPES = [
     id:"zmrt", nom:"ZMRT", nomLlarg:"Zones de Mercat Residencial Tensionat",
     ref:"Resolució TER/800/2024 i TER/2408/2024 · Llei 12/2023, de 24 de maig, pel dret a l'habitatge",
     colorDot:"#3d2b8e",
-    implicacions:`<h4>Què és?</h4><p>Una Zona de Mercat Residencial Tensionat (ZMRT) és un àmbit on el mercat d'habitatge presenta tensions per desajustos entre l'oferta i la demanda, fet que dificulta l'accés a l'habitatge per a la població resident.</p><h4>Implicacions en habitatge</h4><p>Als municipis declarats ZMRT s'apliquen les mesures de <b>contenció de rendes de lloguer</b> previstes a la Llei 12/2023. Els propietaris no poden incrementar les rendes per sobre dels índexs establerts.</p><h4>Fases de declaració</h4><p><b>1a fase (Resolució TER/800/2024, març 2024)</b>: 140 municipis de Catalunya.<br><b>2a fase (Resolució TER/2408/2024, octubre 2024)</b>: 131 municipis addicionals.</p>`,
+    implicacions:`<h4>Què és?</h4><p>De conformitat amb l'article 18 de la Llei 12/2023, de 24 de maig, pel dret a l'habitatge, les administracions competents en matèria d'habitatge poden declarar, zones de mercat residencial tensionat als efectes d'orientar les actuacions públiques en matèria d'habitatge en aquells àmbits territorials en els que existeixi un <b>especial risc d'oferta insuficient d'habitatge</b> per a la població, en condicions que la facin assequible pel seu accés en el mercat i de conformitat amb les diferents necessitats territorials. La declaració requereix que concorri almenys una de les circumstàncies següents (art. 18.3): a) que la càrrega mitjana del cost de la hipoteca o del lloguer, més les despeses i subministraments bàsics, superi el 30% dels ingressos mitjans o de la renda mitjana de les llars; o b) que el preu de compra o lloguer de l'habitatge hagi experimentat en els cinc anys anteriors a la declaració un percentatge de creixement acumulat almenys tres punts percentuals superior al creixement acumulat de l'IPC de la comunitat autònoma corresponent.</p><h4>Implicacions en habitatge</h4>
+<ul>
+  <li><b>Limitació de la renda en nous contractes:</b> no pot superar l'última renda vigent en els últims 5 anys al mateix habitatge, aplicada la clàusula d'actualització anual (art. 17.6 LAU, modificat per la DF primera Llei 12/2023).</li>
+  <li><b>Gran tenidor:</b> la renda no pot superar el límit de l'índex de preus de referència (art. 17.7 LAU, modificat per la DF primera Llei 12/2023).</li>
+  <li><b>Arrendament per habitacions:</b> la suma de totes les rendes de contractes simultanis d'un mateix habitatge en zona tensada no pot superar la renda màxima aplicable a l'arrendament unitari de l'habitatge. L'arrendament per habitacions o qualsevol fragmentació física o contractual no eludeix l'aplicació de les regles pròpies de l'arrendament d'habitatge (art. 66 ter Llei 18/2007, afegit per art. 5.6 Llei 11/2025).</li>
+  <li><b>Obligació d'informar</b> l'arrendatari, abans de formalitzar el contracte, de l'última renda vigent i del valor de l'índex de referència aplicable (art. 31.3 Llei 12/2023).</li>
+  <li><b>Deure de col·laboració</b> i subministrament d'informació a l'administració competent sobre l'ús i destinació dels habitatges, si és gran tenidor (art. 19 Llei 12/2023).</li>
+</ul>
+
+<h4>Implicacions per als arrendataris</h4>
+<ul>
+  <li><b>Dret a sol·licitar una pròrroga extraordinària</b> de fins a 3 anys, en els mateixos termes del contracte en vigor (art. 10.3 LAU, modificat per la DF primera Llei 12/2023).</li>
+</ul>
+
+<h4>Implicacions per a l'habitatge protegit</h4>
+<ul>
+  <li>Els habitatges amb protecció oficial situats en zona tensada mantenen la qualificació vigent mentre ho sigui la declaració de zona tensada, tant per als qualificats abans com després de l'entrada en vigor de la Llei 11/2025 (art. 79.5 i DT dotzena Llei 18/2007, afegits per art. 5.8 i 5.15 Llei 11/2025).</li>
+</ul>
+
+<h4>Implicacions fiscals</h4>
+<ul>
+  <li>L'arrendador pot aplicar una <b>reducció del 90% en l'IRPF</b> si formalitza un nou contracte en zona tensada amb una renda almenys un 5% inferior a l'anterior (DF segona Llei 12/2023, art. 23.2.a LIRPF).</li>
+</ul>
+
+<h4>Implicacions urbanístiques</h4>
+<ul>
+  <li>El sòl obtingut pel compliment del deure de cessió s'ha de destinar necessàriament a habitatge social o dotacional, sense possibilitat de substitució per altres usos (art. 15.1.e Llei 12/2023).</li>
+  <li>L'administració competent ha de redactar un <b>pla específic de mesures correctores</b> (art. 18.4 Llei 12/2023).</li>
+</ul><h4>Fases de declaració</h4><p><b>1a fase (Resolució TER/800/2024, març 2024)</b>: 140 municipis de Catalunya.<br><b>2a fase (Resolució TER/2408/2024, octubre 2024)</b>: 131 municipis addicionals.</p>`,
     categories:["1a fase","2a fase","No ZMRT"],
     catColors:{"1a fase":"#3d2b8e","2a fase":"#7b6abf","No ZMRT":"#cccccc"},
     getVal: d => d ? (d.zmrt==="Sí" ? (d.zmrt_fase.includes("1a") ? "1a fase" : "2a fase") : "No ZMRT") : "No ZMRT",
