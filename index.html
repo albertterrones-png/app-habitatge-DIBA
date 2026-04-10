@@ -466,7 +466,7 @@ No subjectes a l'objectiu de solidaritat urbana. Objectiu de lloguer social: ≥
     id:"hpo", nom:"Zones HPO", nomLlarg:"Zones geogràfiques d'Habitatge amb Protecció Oficial",
     ref:"Ordre VIV/1952/2009, de 9 de juliol",
     colorDot:"#8a4a00",
-    implicacions:`<h4>Què és?</h4><p>Les zones geogràfiques HPO classifiquen el territori en quatre zones (A, B, C, D) per establir els preus màxims de venda, lloguer i cessió d'ús dels habitatges amb protecció oficial.</p><h4>Implicacions en habitatge</h4><p><b>Zona A</b>: preus màxims més alts (correspon a les àrees de major cost residencial, principalment Barcelona i voltants).<br><b>Zona B</b>: preus intermedis-alts.<br><b>Zona C</b>: preus intermedis-baixos.<br><b>Zona D</b>: preus màxims més baixos (zones rurals i de menor pressió del mercat).<br>Determina el <b>preu de venda i lloguer màxim</b> per a tots els habitatges de protecció oficial que es promoguin als municipis.</p>`,
+    implicacions:`<h4>Què és?</h4><p>Les zones geogràfiques HPO classifiquen el territori en quatre zones (A, B, C, D) per establir els preus màxims de venda, lloguer i cessió d'ús dels habitatges amb protecció oficial, així com els límits d'ingressos de les persones sol·licitants.</p>`,
     categories:["A","B","C","D"],
     catColors:{"A":"#c03020","B":"#d07020","C":"#c0a000","D":"#4a8030"},
     getVal: d => d ? (d.hpo || "") : "",
@@ -477,10 +477,20 @@ No subjectes a l'objectiu de solidaritat urbana. Objectiu de lloguer social: ≥
     }
   },
   {
-    id:"rps", nom:"Àmbits RPS", nomLlarg:"Àmbits del Registre Públic de Solars",
+    id:"rps", nom:"Àmbits Registre Solars", nomLlarg:"Àmbits del Registre Públic de Solars",
     ref:"Resolució TER/607/2025 · Decret 408/2024 (PTSH)",
     colorDot:"#1a6a30",
-    implicacions:`<h4>Què és?</h4><p>Els àmbits del Registre Públic de Solars classifiquen els municipis de la província de Barcelona segons la intensitat de la demanda residencial, d'acord amb el PTSH.</p><h4>Implicacions en habitatge</h4><p>Determinen els <b>terminis i obligacions per complir l'objectiu de solidaritat urbana</b> (15% del parc en habitatge assequible) i els preus màxims de referència per al lloguer social. Els municipis de l'àmbit 1 (demanda molt alta) tenen les exigències més altes i els terminis més curts.</p>`,
+    implicacions:`<p><b>Què és</b><br>
+És un registre creat pel Govern de la Generalitat on s'inscriuen solars —tant públics com privats— destinats a construir-hi habitatge protegit de lloguer. Poden inscriure's solars de municipis amb alta demanda d'habitatge, solars que ja tinguin promotor assignat, o bé solars en zones on el lloguer de mercat superi els 9,54 €/m². Un cop inscrits, la Generalitat articula els ajuts i el finançament necessaris per fer viable la construcció.</p>
+
+<p><b>Implicacions dels àmbits</b><br>
+Els municipis es classifiquen en quatre àmbits segons la pressió del mercat immobiliari, i aquesta classificació determina tres aspectes clau:</p>
+
+<p><b>Renda màxima de lloguer.</b> Com més alta és la pressió (àmbit 1), més alt és el topall de lloguer permès. Els habitatges de l'àmbit 1 poden arribar als 10,65 €/m² (per a la meitat dels pisos) i 8,65 €/m² per a l'altra meitat. Els de l'àmbit 4 queden limitats a 6,64 €/m².</p>
+
+<p><b>Percentatge de transmissió en dret de superfície.</b> Als àmbits de menys pressió (àmbit 4) es pot transmetre el dret de superfície al 100% dels habitatges, mentre que a l'àmbit 1 només es pot fer en un màxim del 20%. És a dir, com més demanda hi ha, més habitatges han de romandre en règim de lloguer.</p>
+
+<p><b>Reserva per a vulnerabilitat.</b> Als àmbits 1, 2 i 3, l'Agència de l'Habitatge pot reservar fins a un 10% dels habitatges per a situacions de vulnerabilitat residencial.</p>`,
     categories:["Àmbit 1 - demanda molt alta","Àmbit 2 - demanda alta","Àmbit 3 - demanda mitjana","Àmbit 4 - demanda baixa"],
     catColors:{"Àmbit 1 - demanda molt alta":"#1a2a8e","Àmbit 2 - demanda alta":"#1a5a8e","Àmbit 3 - demanda mitjana":"#1a8a50","Àmbit 4 - demanda baixa":"#8a7a10"},
     getVal: d => d ? (d.rps || "") : "",
