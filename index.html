@@ -386,7 +386,7 @@ const CAPES = [
     }
   },
   {
-    id:"area_ptsh", nom:"Àrea PTSH", nomLlarg:"Àmbits d'Actuació del PTSH",
+    id:"area_ptsh", nom:"Àmbits PTSH", nomLlarg:"Àmbits d'Actuació del PTSH",
     ref:"Decret 408/2024, de 22 d'octubre · Annexos de les normes del PTSH",
     colorDot:"#c04000",
     implicacions:`<h4>Què és?</h4><p>El Pla Territorial Sectorial de l'Habitatge (PTSH) classifica els municipis en àrees en funció de la intensitat de la demanda residencial i les necessitats d'actuació prioritària en matèria d'habitatge assequible.</p><h4>Categories</h4><p><b>Àrees de demanda forta i acreditada</b> — 163 municipis, 83% de la població. Subjectes al mandat de solidaritat urbana (15% del parc destinat a polítiques socials). Són les zones més denses, amb menys habitatge buit i menys sòl disponible per a nous desenvolupaments. Es divideixen en <b>àrees del tipus 1 </b>(àrees en què el ritme d'assoliment de l'objectiu de solidaritat urbana es marca més intens durant els tres primers quinquennis atesa la rellevància territorial dels municipis que s'hi inclouen) i <b>àrees del tipus 2</b> (àrees en què el ritme d'assoliment de l'objectiu de solidaritat urbana és menys intens durant els tres primers quinquennis que per als municipis inclosos a les àrees declarades del tipus 1.</p>
@@ -417,10 +417,15 @@ No subjectes a l'objectiu de solidaritat urbana. Objectiu de lloguer social: ≥
     }
   },
   {
-    id:"intervencio", nom:"Intervenció / Escassa demanda", nomLlarg:"Àrea d'intervenció complementària o d'escassa demanda",
+    id:"intervencio", nom:"Intervenció / Escassa demanda", nomLlarg:"Àrea d'intervenció complementària o d'escassa demanda (PTSH)",
     ref:"Decret 408/2024 · Annex 8 de les normes del PTSH",
     colorDot:"#8a0040",
-    implicacions:`<h4>Què és?</h4><p>L'Annex 8 del PTSH defineix dues categories especials de municipis: els que es troben en àrea d'intervenció complementària i els que estan en àrea d'escassa demanda residencial.</p><h4>Implicacions en habitatge</h4><p><b>Àrea d'intervenció complementària</b>: municipis on s'aplica l'<b>impost sobre habitatges buits</b> previst a la Llei 14/2015. Els propietaris d'habitatges desocupats de forma injustificada estan subjectes a aquest impost per incentivar la posada al mercat dels habitatges buits.<br><b>Àrea d'escassa demanda</b>: municipis on la demanda d'habitatge és baixa, on les polítiques d'habitatge s'orienten a la reactivació del parc existent i a evitar el despoblament.</p>`,
+    implicacions:`<h4>Què és?</h4><p>L'Annex 8 de les normes del PTSH defineix dues categories especials de municipis: els que es troben en àrea d'intervenció complementària i els que estan en àrea d'escassa demanda residencial.</p><h4>Implicacions en habitatge</h4>```html
+<p>La delimitació de les àrees d'intervenció complementària esdevé necessària per determinar els àmbits d'escassa demanda acreditada, i donar així compliment per part del Pla al mandat establert en l'article 10 i la disposició transitòria segona de la <b>Llei 14/2015, del 21 de juliol, de l'impost sobre els habitatges buits, i de modificació de normes tributàries i de la Llei 3/2012</b>.</p>
+
+<p>Els municipis que configuren aquestes zones d'escassa demanda —els habitatges dels quals queden exempts de l'impost— són els no inclosos en les àrees d'intervenció complementària.</p>
+
+<p>A la vegada, l'impost resulta d'aplicació als municipis que formen part de les àrees d'intervenció complementària, als quals també els resultarà d'aplicació aquelles altres mesures que puguin establir els plans d'habitatge de la Generalitat o la normativa sectorial sobre habitatge amb la finalitat de fer efectiu de forma directa o indirecta el dret a un habitatge digne i adequat.</p>`,
     categories:["Intervenció complementària","Escassa demanda"],
     catColors:{"Intervenció complementària":"#9a0050","Escassa demanda":"#607080"},
     getVal: d => d ? (d.intervencio || "") : "",
@@ -573,7 +578,7 @@ const DIMS = [
     }
   },
   {
-    id:"area_ptsh", nom:"Àmbits d'actuació del PTSH)", capaId:"area_ptsh",
+    id:"area_ptsh", nom:"Àmbits d'actuació del PTSH", capaId:"area_ptsh",
     info:true,
     render: d => {
       if (!d || !d.area_ptsh) return {pill:"p-no", text:"—"};
