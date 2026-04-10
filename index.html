@@ -386,13 +386,28 @@ const CAPES = [
     }
   },
   {
-    id:"area_ptsh", nom:"Àrea PTSH", nomLlarg:"Municipis segons àrea del PTSH",
+    id:"area_ptsh", nom:"Àrea PTSH", nomLlarg:"Àmbits d'Actuació del PTSH",
     ref:"Decret 408/2024, de 22 d'octubre · Annexos de les normes del PTSH",
     colorDot:"#c04000",
-    implicacions:`<h4>Què és?</h4><p>El Pla Territorial Sectorial de l'Habitatge (PTSH) classifica els municipis en àrees en funció de la intensitat de la demanda residencial i les necessitats d'actuació prioritària en matèria d'habitatge assequible.</p><h4>Categories</h4><p><b>Àrees de demanda forta i acreditada</b> — 163 municipis, 83% de la població. Subjectes al mandat de solidaritat urbana (15% del parc destinat a polítiques socials). Són les zones més denses, amb menys habitatge buit i menys sòl disponible per a nous desenvolupaments.</p>
+    implicacions:`<h4>Què és?</h4><p>El Pla Territorial Sectorial de l'Habitatge (PTSH) classifica els municipis en àrees en funció de la intensitat de la demanda residencial i les necessitats d'actuació prioritària en matèria d'habitatge assequible.</p><h4>Categories</h4><p><b>Àrees de demanda forta i acreditada</b> — 163 municipis, 83% de la població. Subjectes al mandat de solidaritat urbana (15% del parc destinat a polítiques socials). Són les zones més denses, amb menys habitatge buit i menys sòl disponible per a nous desenvolupaments. Es divideixen en <b>àrees del tipus 1 </b>(àrees en què el ritme d'assoliment de l'objectiu de solidaritat urbana es marca més intens durant els tres primers quinquennis atesa la rellevància territorial dels municipis que s'hi inclouen) i <b>àrees del tipus 2</b> (àrees en què el ritme d'assoliment de l'objectiu de solidaritat urbana és menys intens durant els tres primers quinquennis que per als municipis inclosos a les àrees declarades del tipus 1.</p>
 <p><b>Àrees urbanes preferents</b> — 55 municipis, 492.000 persones (6,4%). Municipis prioritaris per ampliar el parc social fora de les àrees de demanda forta, per complir determinats requisits d'idoneïtat.</p>
 <p><b>Àrees urbanes no preferents</b> — 118 municipis, 425.000 persones (5,5%). Municipis que no compleixen els requisits de cap de les categories anteriors ni de la rural.</p>
-<p><b>Àrees rurals</b> — 612 municipis, 407.000 persones (5%). Objecte d'un pla d'habitatge específic orientat a millorar l'encaix de les polítiques d'habitatge en el medi rural.</p><h4>Implicacions en habitatge</h4><p>Determina la <b>obligatorietat i els terminis per complir l'objectiu de solidaritat urbana</b> (15% del parc en habitatge de lloguer social) i condiciona la obligació de redactar un  Programa d'Actuació Concertada (PAC).</p>`,
+<p><b>Àrees rurals</b> — 612 municipis, 407.000 persones (5%). Objecte d'un pla d'habitatge específic orientat a millorar l'encaix de les polítiques d'habitatge en el medi rural.</p><h4>Implicacions en habitatge</h4>
+```html
+<p>El <b>Decret 408/2024, de 22 d'octubre, pel qual s'aprova el Pla territorial sectorial d'habitatge i es desenvolupa l'objectiu de solidaritat urbana que preveu la Llei 18/2007, de 28 de desembre, del dret a l'habitatge</b>, estableix el següent per a diferents àmbits:</p>
+
+<p><b>Àrees de demanda residencial forta i acreditada (art. 11)</b><br>
+Subjectes a l'objectiu de solidaritat urbana (art. 73 Llei 18/2007). Objectiu de lloguer social: ≥ 10,3% del parc d'habitatges principals en 20 anys des de l'1/1/2025.</p>
+
+<p><b>Àrees preferents (art. 12)</b><br>
+No subjectes a l'objectiu de solidaritat urbana. Objectiu de lloguer social: ≥ 3,6% del parc d'habitatges principals en 20 anys des de l'1/1/2025. Promoció quinquennal: ≥ 7 HPO per cada 1.000 habitants.</p>
+
+<p><b>Àrees no preferents (art. 14)</b><br>
+No subjectes a l'objectiu de solidaritat urbana. Objectiu de lloguer social: ≥ 3,1% del parc d'habitatges principals en 20 anys des de l'1/1/2025. Promoció quinquennal: ≥ 4,5 HPO per cada 1.000 habitants.</p>
+
+<p><b>Àrees rurals (art. 13)</b><br>
+No subjectes a l'objectiu de solidaritat urbana. Objectiu de lloguer social: ≥ 1,3% del parc d'habitatges principals en 20 anys des de l'1/1/2025.</p>
+````,
     categories:["Àrea de demanda forta i acreditada 1","Àrea de demanda forta i acreditada 2","Preferent","Rural","No preferent"],
     catColors:{"Àrea de demanda forta i acreditada 1":"#c03020","Àrea de demanda forta i acreditada 2":"#e06040","Preferent":"#e0a020","Rural":"#6a8a40","No preferent":"#aaaaaa"},
     getVal: d => d ? d.area_ptsh : "",
